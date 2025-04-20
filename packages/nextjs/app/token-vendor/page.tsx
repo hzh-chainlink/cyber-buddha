@@ -28,8 +28,8 @@ const TokenVendor: NextPage = () => {
     args: [address],
   });
 
-  const { data: vendorContractData } = useDeployedContractInfo("Vendor");
-  const { writeContractAsync: writeVendorAsync } = useScaffoldWriteContract("Vendor");
+  const { data: vendorContractData } = useDeployedContractInfo("Counter");
+  const { writeContractAsync: writeVendorAsync } = useScaffoldWriteContract("Counter");
   const { writeContractAsync: writeYourTokenAsync } = useScaffoldWriteContract("YourToken");
 
   // const { data: vendorTokenBalance } = useScaffoldReadContract({
@@ -45,40 +45,63 @@ const TokenVendor: NextPage = () => {
   //   functionName: "tokensPerEth",
   // });
 
+  const { data: vendorTokenBalance } = useScaffoldReadContract({
+    contractName: "Counter",
+    functionName: "number",
+  });
+
+  const { data: vendorEthBalance } = useScaffoldReadContract({
+    contractName: "YourToken",
+    functionName: "totalSupply"
+  });
+
+  const {data: minimumUsd} = useScaffoldReadContract({
+    contractName: "Counter",
+    functionName: "MINIMUM_USD"
+  });
+
   return (
     <>
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="flex flex-col items-center bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-24 w-full max-w-lg">
-          <div className="text-xl">
-            Your token balance:{" "}
-            <div className="inline-flex items-center justify-center">
+          {/* 佛祖馈赠 */}
+          <div className="flex justify-between w-full text-xl">
+            <div className="text-right font-bold">🙏 佛祖馈赠</div>
+            <div className="text-left inline-flex items-center ml-4">
               {parseFloat(formatEther(yourTokenBalance || 0n)).toFixed(4)}
+              <span className="font-bold ml-2">{yourTokenSymbol}</span>
+            </div>
+          </div>
+
+          <hr className="w-full border-secondary my-3" />
+
+          {/* 功德箱 */}
+          <div className="flex justify-between w-full">
+            <div className="text-right">💰 功德箱</div>
+            <div className="text-left ml-4">
+              {Number(vendorTokenBalance || 0n).toFixed(0)}
+              {/* <span className="font-bold ml-1">{yourTokenSymbol}</span> */}
+            </div>
+          </div>
+
+          {/* 功德池 */}
+          <div className="flex justify-between w-full">
+            <div className="text-right">🏦 功德池</div>
+            <div className="text-left ml-4">
+              {Number(formatEther(vendorEthBalance || 0n)).toFixed(4)}
               <span className="font-bold ml-1">{yourTokenSymbol}</span>
             </div>
           </div>
-          {/* Vendor Balances */}
-          {/* <hr className="w-full border-secondary my-3" />
-          <div>
-            Vendor token balance:{" "}
-            <div className="inline-flex items-center justify-center">
-              {Number(formatEther(vendorTokenBalance || 0n)).toFixed(4)}
-              <span className="font-bold ml-1">{yourTokenSymbol}</span>
-            </div>
-          </div>
-          <div>
-            Vendor eth balance: {Number(formatEther(vendorEthBalance?.value || 0n)).toFixed(4)}
-            <span className="font-bold ml-1">ETH</span>
-          </div> */}
         </div>
 
         {/* Buy Tokens */}
-        {/* <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
-          <div className="text-xl">Buy tokens</div>
-          <div>{tokensPerEth?.toString() || 0} tokens per ETH</div>
+        <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
+          <div className="text-xl font-bold">🪔 赛博上香</div>
+          {/* <div>{tokensPerEth?.toString() || 0} tokens per ETH</div> */}
 
           <div className="w-full flex flex-col space-y-2">
             <IntegerInput
-              placeholder="amount of tokens to buy"
+              placeholder={`最低 ${parseFloat(formatEther(minimumUsd || 0n)).toFixed(2)} 美元（RON)`}
               value={tokensToBuy.toString()}
               onChange={value => setTokensToBuy(value)}
               disableMultiplyBy1e18
@@ -89,17 +112,18 @@ const TokenVendor: NextPage = () => {
             className="btn btn-secondary mt-2"
             onClick={async () => {
               try {
-                await writeVendorAsync({ functionName: "buyTokens", value: getTokenPrice(tokensToBuy, tokensPerEth) });
+                await writeVendorAsync({ functionName: "incrementWithFund", value: BigInt(tokensToBuy) });
               } catch (err) {
                 console.error("Error calling buyTokens function");
               }
             }}
           >
-            Buy Tokens
+            祈愿一次 💎
           </button>
-        </div> */}
+        </div>
 
-        {!!yourTokenBalance && (
+        {/* {!!yourTokenBalance && ( */}
+        {/* {(
           <div className="flex flex-col items-center space-y-4 bg-base-100 shadow-lg shadow-secondary border-8 border-secondary rounded-xl p-6 mt-8 w-full max-w-lg">
             <div className="text-xl">Transfer tokens</div>
             <div className="w-full flex flex-col space-y-2">
@@ -128,7 +152,7 @@ const TokenVendor: NextPage = () => {
               Send Tokens
             </button>
           </div>
-        )}
+        )} */}
 
         {/* Sell Tokens */}
         {/* {!!yourTokenBalance && (
