@@ -1,0 +1,42 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\n// solhint-disable-next-line interface-starts-with-i\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  function getRoundData(\n    uint80 _roundId\n  ) external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n\n  function latestRoundData()\n    external\n    view\n    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);\n}\n"
+    },
+    "contracts/Counter.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n// 1. Pragma\npragma solidity ^0.8.13;\n\n// 2. Imports\nimport {AggregatorV3Interface} from \"@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol\";\nimport {PriceConverter} from \"./PriceConverter.sol\";\n\n// 3. Interfaces, Libraries, Contracts\nerror FundMe__NotOwner();\ninterface IMyToken {\n    function mint(address to, uint256 amount) external ;\n    }\n    \ncontract Counter {\n    // Type Declarations\n    using PriceConverter for uint256;\n\n    // State variables\n    uint256 public constant MINIMUM_USD = 0.05 * 10 ** 18;\n    address private immutable i_owner;\n    uint256 public number;\n    address[] private s_funders;\n    mapping(address => uint256) private s_addressToAmountFunded;\n    IMyToken public myToken;\n    AggregatorV3Interface private s_priceFeed;\n\n    // Events\n    event TokenMinted(address indexed to, uint256 amount);\n\n    // Modifiers\n    modifier onlyOwner() {\n        // require(msg.sender == i_owner);\n        if (msg.sender != i_owner) revert FundMe__NotOwner();\n        _;\n    }\n\n    // Functions Order:\n    //// constructor\n    //// receive\n    //// fallback\n    //// external\n    //// public\n    //// internal\n    //// private\n    //// view / pure\n\n    constructor(address tokenAddress, address priceFeed) {\n        i_owner = msg.sender;\n        myToken = IMyToken(tokenAddress);\n        s_priceFeed = AggregatorV3Interface(priceFeed);\n    }\n\n    function setNumber(uint256 newNumber) public {\n        number = newNumber;\n    }\n\n    // Check、Effect、Interact\n    function incrementWithFund() public payable {\n        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, \"You need to spend more ETH!\");\n\n        number++;\n        s_addressToAmountFunded[msg.sender] += msg.value;\n        s_funders.push(msg.sender);\n\n        myToken.mint(msg.sender, 100 * 10 ** 18);\n        emit TokenMinted(msg.sender, 100 * 10 ** 18);\n    }\n\n    function withdraw() public onlyOwner {\n        address[] memory funders = s_funders;\n        // mappings can't be in memory, sorry!\n        for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {\n            address funder = funders[funderIndex];\n            s_addressToAmountFunded[funder] = 0;\n        }\n        s_funders = new address[](0);\n        // payable(msg.sender).transfer(address(this).balance);\n        (bool success,) = i_owner.call{value: address(this).balance}(\"\");\n        require(success);\n    }\n\n\n    function getOwner() public view returns (address) {\n        return i_owner;\n    }\n\n    function getVersion() public view returns (uint256) {\n        return s_priceFeed.version();\n    }\n\n    function getPriceFeed() public view returns (AggregatorV3Interface) {\n        return s_priceFeed;\n    }\n\n    function getFunder(uint256 index) public view returns (address) {\n        return s_funders[index];\n    }\n\n    function getAddressToAmountFunded(address fundingAddress) public view returns (uint256) {\n        return s_addressToAmountFunded[fundingAddress];\n    }\n}\n"
+    },
+    "contracts/PriceConverter.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.19;\n\nimport {AggregatorV3Interface} from \"@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol\";\n\nlibrary PriceConverter {\n    function getPrice(AggregatorV3Interface priceFeed) internal view returns (uint256) {\n        (, int256 answer,,,) = priceFeed.latestRoundData();\n        // ETH/USD rate in 18 digit\n        return uint256(answer * 10000000000);\n    }\n\n    // 1000000000\n    // call it get fiatConversionRate, since it assumes something about decimals\n    // It wouldn't work for every aggregator\n    function getConversionRate(uint256 ethAmount, AggregatorV3Interface priceFeed) internal view returns (uint256) {\n        uint256 ethPrice = getPrice(priceFeed);\n        uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;\n        // the actual ETH/USD conversation rate, after adjusting the extra 0s.\n        return ethAmountInUsd;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

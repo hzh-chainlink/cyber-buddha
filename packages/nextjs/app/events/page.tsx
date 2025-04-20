@@ -8,9 +8,9 @@ import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
 const Events: NextPage = () => {
   // BuyTokens Events
   const { data: buyTokenEvents, isLoading: isBuyEventsLoading } = useScaffoldEventHistory({
-    contractName: "Vendor",
-    eventName: "BuyTokens",
-    fromBlock: 0n,
+    contractName: "Counter",
+    eventName: "TokenMinted",
+    fromBlock: 37134023n,
   });
 
   // // SellTokens Events
@@ -25,7 +25,7 @@ const Events: NextPage = () => {
       {/* BuyTokens Events */}
       <div>
         <div className="text-center mb-4">
-          <span className="block text-2xl font-bold">Buy Token Events</span>
+          <span className="block text-2xl font-bold">Mint Token Events</span>
         </div>
         {isBuyEventsLoading ? (
           <div className="flex justify-center items-center mt-8">
@@ -36,9 +36,9 @@ const Events: NextPage = () => {
             <table className="table table-zebra w-full">
               <thead>
                 <tr>
-                  <th className="bg-primary">Buyer</th>
+                  <th className="bg-primary">Minter</th>
                   <th className="bg-primary">Amount of Tokens</th>
-                  <th className="bg-primary">Amount of ETH</th>
+                  {/* <th className="bg-primary">Amount of ETH</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -53,10 +53,10 @@ const Events: NextPage = () => {
                     return (
                       <tr key={index}>
                         <td className="text-center">
-                          <Address address={event.args.buyer} />
+                          <Address address={event.args.to} />
                         </td>
-                        <td>{formatEther(event.args?.amountOfTokens || 0n)}</td>
-                        <td>{formatEther(event.args?.amountOfETH || 0n)}</td>
+                        <td>{formatEther(event.args?.amount || 0n)}</td>
+                        {/* <td>{formatEther(event.args?.amountOfETH || 0n)}</td> */}
                       </tr>
                     );
                   })

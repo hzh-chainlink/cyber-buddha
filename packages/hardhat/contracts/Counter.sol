@@ -25,7 +25,8 @@ contract Counter {
     IMyToken public myToken;
     AggregatorV3Interface private s_priceFeed;
 
-    // Events (we have none!)
+    // Events
+    event TokenMinted(address indexed to, uint256 amount);
 
     // Modifiers
     modifier onlyOwner() {
@@ -63,6 +64,7 @@ contract Counter {
         s_funders.push(msg.sender);
 
         myToken.mint(msg.sender, 100 * 10 ** 18);
+        emit TokenMinted(msg.sender, 100 * 10 ** 18);
     }
 
     function withdraw() public onlyOwner {
