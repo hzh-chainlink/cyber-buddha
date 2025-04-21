@@ -47,29 +47,29 @@ export const Footer = () => {
         <ul className="menu menu-horizontal w-full">
           <div className="flex justify-center items-center gap-2 text-sm w-full">
             <div className="text-center">
-              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
-                Fork me
+              <a href="https://github.com/hzh-chainlink/cyber-buddha" target="_blank" rel="noreferrer" className="link">
+                完整代码
               </a>
             </div>
             <span>·</span>
             <div className="flex justify-center items-center gap-2">
-              <p className="m-0 text-center">
-                Built with <HeartIcon className="inline-block h-4 w-4" /> at
-              </p>
+              {/* <p className="m-0 text-center">
+                更多资料 <HeartIcon className="inline-block h-4 w-4" /> 参考
+              </p> */}
               <a
                 className="flex justify-center items-center gap-1"
-                href="https://buidlguidl.com/"
+                href="https://github.com/hzh-chainlink"
                 target="_blank"
                 rel="noreferrer"
               >
-                <BuidlGuidlLogo className="w-3 h-5 pb-1" />
-                <span className="link">BuidlGuidl</span>
+                {/* <BuidlGuidlLogo className="w-3 h-5 pb-1" /> */}
+                <span className="link">更多资料</span>
               </a>
             </div>
             <span>·</span>
             <div className="text-center">
-              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
-                Support
+              <a href="https://t.me/+yI6Ovwb_-_RlYzQx" target="_blank" rel="noreferrer" className="link">
+                TG 交流群
               </a>
             </div>
           </div>

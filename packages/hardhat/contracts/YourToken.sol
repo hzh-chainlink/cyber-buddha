@@ -18,3 +18,4 @@ contract YourToken is ERC20, AccessControl {
         _mint(to, amount);
     }
 }
+

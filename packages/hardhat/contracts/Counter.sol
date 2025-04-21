@@ -101,3 +101,4 @@ contract Counter {
         return s_addressToAmountFunded[fundingAddress];
     }
 }
+

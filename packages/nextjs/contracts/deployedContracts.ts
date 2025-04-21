@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   2021: {
     Counter: {
-      address: "0xF269B2c4AB5a85cF881189843cdB88d93E21Ec63",
+      address: "0x139778D3d83DF8FD702F44E7d6dffAb4c4b7fd01",
       abi: [
         {
           inputs: [
@@ -196,7 +196,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     YourToken: {
-      address: "0xF043804E445B8991a549D06b980eeCBD20005Cc0",
+      address: "0xfEacA4145e36F92D9fB66972745Ac6Ca6d94B5f9",
       abi: [
         {
           inputs: [
